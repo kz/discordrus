@@ -6,6 +6,18 @@ import (
 	"strings"
 	"net/http"
 	"bytes"
+	"fmt"
+)
+
+const (
+	maxFieldNum         = 25
+	minUsernameChars    = 2
+	maxUsernameChars    = 32
+	maxAuthorChars      = 256
+	maxFieldNameChars   = 256
+	maxFieldValueChars  = 1024
+	maxDescriptionChars = 2048
+	usernameTooShortMsg = " (USERNAME TOO SHORT)"
 )
 
 // Opts contains the options available for the hook
@@ -14,8 +26,6 @@ type Opts struct {
 	Username string
 	// Author adds an author field if set (default: none)
 	Author string
-	// Asynchronous specifies whether the HTTP request should be made in a goroutine without return (default: false)
-	Asynchronous bool
 	// DisableInlineFields causes fields to be displayed one per line as opposed to being inline (i.e., in columns) (default: false)
 	DisableInlineFields bool
 	// EnableCustomColors specifies whether CustomLevelColors should be used instead of DefaultLevelColors (default: true)
@@ -38,6 +48,30 @@ type Hook struct {
 	Opts *Opts
 }
 
+// NewHook creates a new instance of a hook, ensures correct string lengths and returns its pointer
+func NewHook(webhookURL string, minLevel logrus.Level, opts *Opts) *Hook {
+	hook := Hook{
+		WebhookURL: webhookURL,
+		MinLevel:   minLevel,
+		Opts:       opts,
+	}
+
+	// Ensure correct username length
+	if hook.Opts.Username != "" && len(hook.Opts.Username) < minUsernameChars {
+		// Append "(USERNAME TOO SHORT)" in order not to disrupt logging operations
+		hook.Opts.Username = hook.Opts.Username + usernameTooShortMsg
+	} else if len(hook.Opts.Username) > maxUsernameChars {
+		hook.Opts.Username = hook.Opts.Username[:maxUsernameChars]
+	}
+
+	// Truncate author
+	if len(hook.Opts.Author) > maxAuthorChars {
+		hook.Opts.Author = hook.Opts.Author[:maxAuthorChars]
+	}
+
+	return &hook
+}
+
 func (hook *Hook) Fire(entry *logrus.Entry) error {
 	// Parse the entry to a Discord webhook object in JSON form
 	webhookObject, err := hook.parseToJson(entry)
@@ -45,11 +79,6 @@ func (hook *Hook) Fire(entry *logrus.Entry) error {
 		return err
 	}
 
-	// Send the JSON data to the webhook URL, via goroutine if required
-	if hook.Opts.Asynchronous {
-		go hook.send(webhookObject)
-		return nil
-	}
 	err = hook.send(webhookObject)
 	if err != nil {
 		return err
@@ -62,14 +91,13 @@ func (hook *Hook) Levels() []logrus.Level {
 	return LevelThreshold(hook.MinLevel)
 }
 
-func (hook *Hook) parseToJson(entry *logrus.Entry) ([]byte, error) {
+func (hook *Hook) parseToJson(entry *logrus.Entry) (*[]byte, error) {
 	// Create struct mapping to Discord webhook object
 	var data = map[string]interface{}{
 		"embeds": []map[string]interface{}{},
 	}
 	var embed = map[string]interface{}{
-		"title":       strings.ToUpper(entry.Level.String()),
-		"description": entry.Message,
+		"title": strings.ToUpper(entry.Level.String()),
 	}
 	var fields = []map[string]interface{}{}
 
@@ -77,6 +105,12 @@ func (hook *Hook) parseToJson(entry *logrus.Entry) ([]byte, error) {
 	if hook.Opts.Username != "" {
 		data["username"] = hook.Opts.Username
 	}
+
+	// Add description to embed
+	if len(entry.Message) > maxDescriptionChars {
+		entry.Message = entry.Message[:maxDescriptionChars]
+	}
+	embed["description"] = entry.Message
 
 	// Add color to embed
 	if hook.Opts.EnableCustomColors {
@@ -104,24 +138,43 @@ func (hook *Hook) parseToJson(entry *logrus.Entry) ([]byte, error) {
 	}
 
 	// Add fields to embed
+	counter := 0
 	for name, value := range entry.Data {
+		// Ensure that the maximum field number is not exceeded
+		if counter > maxFieldNum {
+			break
+		}
+
+		// Make value a string
+		valueStr := fmt.Sprintf("%v", value)
+
+		// Truncate names and values which are too long
+		if len(name) > maxFieldNameChars {
+			name = name[:maxFieldNameChars]
+		}
+		if len(valueStr) > maxFieldValueChars {
+			valueStr = valueStr[:maxFieldValueChars]
+		}
+
 		var embedField = map[string]interface{}{
 			"name":   name,
-			"value":  value,
+			"value":  valueStr,
 			"inline": !hook.Opts.DisableInlineFields,
 		}
 		fields = append(fields, embedField)
+		counter++
 	}
 
 	// Merge fields and embed into data
 	embed["fields"] = fields
 	data["embeds"] = []map[string]interface{}{embed}
 
-	return json.Marshal(data)
+	marshaled, err := json.Marshal(data)
+	return &marshaled, err
 }
 
-func (hook *Hook) send(webhookObject []byte) error {
-	_, err := http.Post(hook.WebhookURL, "application/json; charset=utf-8", bytes.NewBuffer(webhookObject))
+func (hook *Hook) send(webhookObject *[]byte) error {
+	_, err := http.Post(hook.WebhookURL, "application/json; charset=utf-8", bytes.NewBuffer(*webhookObject))
 	if err != nil {
 		return err
 	}
