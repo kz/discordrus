@@ -1,6 +1,6 @@
 # discordrus | a [Discord](https://discordapp.com/) hook for [Logrus](https://github.com/Sirupsen/logrus) [![GoDoc](https://godoc.org/github.com/puddingfactory/logentrus?status.svg)](https://godoc.org/github.com/kz/discordrus)
 
-**Current version:** v1.0
+**Current version:** v1.0.0
 
 ![Screenshot of discordrus in action](http://i.imgur.com/zvDNDjV.png)
 
