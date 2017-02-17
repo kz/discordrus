@@ -21,7 +21,7 @@ type Opts struct {
 	// EnableCustomColors specifies whether CustomLevelColors should be used instead of DefaultLevelColors (default: true)
 	EnableCustomColors bool
 	// CustomLevelColors is a LevelColors struct which replaces DefaultLevelColors if EnableCustomColors is set to true (default: none)
-	CustomLevelColors LevelColors
+	CustomLevelColors *LevelColors
 	// DisableTimestamp specifies whether the timestamp in the footer should be disabled (default: false)
 	DisableTimestamp bool
 	// TimestampFormat specifies a custom format for the footer

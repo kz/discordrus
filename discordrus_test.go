@@ -23,7 +23,7 @@ func init() {
 			TimestampFormat: "Jan 2 15:04:05.00000", // The timestamp takes this format; if it is unset, it will take logrus' default format
 			Asynchronous: false, // If set to true, the HTTP request will be made in a goroutine
 			EnableCustomColors: true, // If set to true, the below CustomLevelColors will apply
-			CustomLevelColors: LevelColors{
+			CustomLevelColors: &LevelColors{
 				Debug: 10170623,
 				Info:  3581519,
 				Warn:  14327864,
