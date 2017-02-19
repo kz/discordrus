@@ -65,12 +65,12 @@ func TestMaxLengths(t *testing.T) {
 		},
 		{
 			name:               "fieldNumMax",
-			json:               "{\"embeds\":[{\"author\":{\"name\":\"A\"},\"description\":\"A\",\"fields\":[" + strings.Repeat("{\"name\":\"A\",\"value\":\"A\"},", maxFieldNum-1) + "{\"name\":\"A\",\"value\":\"A\"}],\"title\":\"A\"}],\"username\":\"AA\"}",
+			json:               "{\"embeds\":[{\"author\":{\"name\":\"A\"},\"description\":\"A\",\"fields\":[" + strings.Repeat("{\"name\":\"A\",\"value\":\"A\"},", maxFieldNum) + "{\"name\":\"A\",\"value\":\"A\"}],\"title\":\"A\"}],\"username\":\"AA\"}",
 			expectedStatusCode: 204,
 		},
 		{
 			name:               "fieldNumMaxPlusOne",
-			json:               "{\"embeds\":[{\"author\":{\"name\":\"A\"},\"description\":\"A\",\"fields\":[" + strings.Repeat("{\"name\":\"b\",\"value\":\"A\"},", maxFieldNum) + "{\"name\":\"B\",\"value\":\"A\"}],\"title\":\"A\"}],\"username\":\"AA\"}",
+			json:               "{\"embeds\":[{\"author\":{\"name\":\"A\"},\"description\":\"A\",\"fields\":[" + strings.Repeat("{\"name\":\"b\",\"value\":\"A\"},", maxFieldNum+1) + "{\"name\":\"B\",\"value\":\"A\"}],\"title\":\"A\"}],\"username\":\"AA\"}",
 			expectedStatusCode: 204, // For some reason, Discord does the truncation on their side to enforce the limit
 		},
 		{
