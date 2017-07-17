@@ -1,7 +1,7 @@
 package discordrus
 
 import (
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 // LevelColors is a struct of the possible colors used in Discord color format (0x[RGB] converted to int)

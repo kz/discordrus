@@ -1,12 +1,13 @@
 package discordrus
 
 import (
-	"github.com/Sirupsen/logrus"
-	"encoding/json"
-	"strings"
-	"net/http"
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"net/http"
+	"strings"
+
+	"github.com/sirupsen/logrus"
 )
 
 const (

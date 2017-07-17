@@ -1,13 +1,14 @@
 package discordrus
 
 import (
-	"github.com/Sirupsen/logrus"
-	"os"
-	"testing"
 	"bytes"
 	"net/http"
+	"os"
 	"strings"
+	"testing"
 	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
 func init() {
@@ -123,7 +124,6 @@ func TestMaxLengths(t *testing.T) {
 			json:               "{\"embeds\":[{\"author\":{\"name\":\"A\"},\"description\":\"" + strings.Repeat("A", maxDescriptionChars+1) + "\",\"fields\":[{\"name\":\"A\",\"value\":\"A\"}],\"title\":\"A\"}],\"username\":\"AA\"}",
 			expectedStatusCode: 400,
 		},
-
 	}
 
 	for _, test := range tests {
