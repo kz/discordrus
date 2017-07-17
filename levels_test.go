@@ -1,9 +1,10 @@
 package discordrus
 
 import (
-	"testing"
-	"github.com/Sirupsen/logrus"
 	"reflect"
+	"testing"
+
+	"github.com/sirupsen/logrus"
 )
 
 // TestAllLevels ensures that logrus' AllLevels has not changed
@@ -71,16 +72,16 @@ func TestLevelColor(t *testing.T) {
 		Panic: 5,
 		Fatal: 6,
 	}
-	
+
 	// Test default colors
 	expectedDefaultColorForError := DefaultLevelColors.Error
 	if expectedDefaultColorForError != DefaultLevelColors.LevelColor(logrus.ErrorLevel) {
 		t.Error("Error color for default LevelColor is not as expected")
 	}
-	
+
 	// Test custom colors
 	expectedCustomColorForPanic := customLevelColors.Panic
 	if expectedCustomColorForPanic != customLevelColors.LevelColor(logrus.PanicLevel) {
 		t.Error("Panic color for custom LevelColor is not as expected")
-	}	
+	}
 }
