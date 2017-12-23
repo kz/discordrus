@@ -21,10 +21,10 @@ Below is an example of how this package may be used. The options below are used 
 package main
 
 import (
-    "os"
-    "time"
-    "strings"
-    
+	"os"
+	"strings"
+	"time"
+	
 	"github.com/sirupsen/logrus"
 	"github.com/kz/discordrus"
 )
@@ -33,47 +33,47 @@ func init() {
 	logrus.SetFormatter(&logrus.TextFormatter{})
 	logrus.SetOutput(os.Stderr)
 	logrus.SetLevel(logrus.DebugLevel)
-	
+
 	// Log timestamps in UTC
 	timeString := ""
-	
+
 	timestampLocale, err := time.LoadLocation("UTC") // e.g. "America/New_York"
 	if err != nil {
 		logrus.WithError(err).Debugf("Unable to determine timestampLocale, defaulting to local runtime")
-		
+
 		timeString = time.Now().String()
 	} else {
-        logrus.WithField("timestampLocale", timestampLocale).Debugf("Found custom logging locality")
+		logrus.WithField("timestampLocale", timestampLocale).Debugf("Found custom logging locality")
 
-        timeString = time.Now().In(timestampLocale).String()
-    }
-	
+		timeString = time.Now().In(timestampLocale).String()
+	}
+
 	// timeZoneTokens => [2017-12-23] [11:45:53.0703314] [-0000] [UTC]
-    timeZoneToken := strings.Split(timeString, " ")[3]
+	timeZoneToken := strings.Split(timeString, " ")[3]
 
-    timeStampFormat := "Jan 2 15:04:05.00000 " + timeZoneToken
+	timeStampFormat := "Jan 2 15:04:05.00000 " + timeZoneToken
 
 	logrus.AddHook(discordrus.NewHook(
 		// Use environment variable for security reasons
 		os.Getenv("DISCORDRUS_WEBHOOK_URL"),
 		// Set minimum level to DebugLevel to receive all log entries
 		logrus.DebugLevel,
-        &discordrus.Opts{
-            Username:            "",
-            Author:              "",    // Setting this to a non-empty string adds the author text to the message header
-            DisableInlineFields: false, // If set to true, fields will not appear in columns ("inline")
-            EnableCustomColors:  true,  // If set to true, the below CustomLevelColors will apply
-            CustomLevelColors: &discordrus.LevelColors{
-                Debug: 10170623,
-                Info:  3581519,
-                Warn:  14327864,
-                Error: 13631488,
-                Panic: 13631488,
-                Fatal: 13631488,
-            },
-            DisableTimestamp: false,           // Setting this to true will disable timestamps from appearing in the footer
-            TimestampFormat:  timeStampFormat, // The timestamp takes this format; if it is unset, it will take logrus' default format
-            TimestampLocale:  nil,             // nil == time.Local, time.UTC, time.LoadLocation("America/New_York"), etc
+		&discordrus.Opts{
+			Username:            "",
+			Author:              "",    // Setting this to a non-empty string adds the author text to the message header
+			DisableInlineFields: false, // If set to true, fields will not appear in columns ("inline")
+			EnableCustomColors:  true,  // If set to true, the below CustomLevelColors will apply
+			CustomLevelColors: &discordrus.LevelColors{
+				Debug: 10170623,
+				Info:  3581519,
+				Warn:  14327864,
+				Error: 13631488,
+				Panic: 13631488,
+				Fatal: 13631488,
+			},
+			DisableTimestamp: false,           // Setting this to true will disable timestamps from appearing in the footer
+			TimestampFormat:  timeStampFormat, // The timestamp takes this format; if it is unset, it will take logrus' default format
+			TimestampLocale:  nil,             // nil == time.Local, time.UTC, time.LoadLocation("America/New_York"), etc
 		},
 	))
 }
