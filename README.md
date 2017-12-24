@@ -1,6 +1,6 @@
 # discordrus | a [Discord](https://discordapp.com/) hook for [Logrus](https://github.com/Sirupsen/logrus) <img src="http://i.imgur.com/hTeVwmJ.png" width="40" height="40" alt=":walrus:" class="emoji" title=":walrus:"/> [![Travis CI](https://api.travis-ci.org/kz/discordrus.svg?branch=master)](https://travis-ci.org/kz/discordrus) [![GoDoc](https://godoc.org/github.com/puddingfactory/logentrus?status.svg)](https://godoc.org/github.com/kz/discordrus)
 
-**Current version:** v1.0.1
+**Current version:** v1.1.0
 
 ![Screenshot of discordrus in action](http://i.imgur.com/zvDNDjV.png)
 
@@ -21,8 +21,8 @@ Below is an example of how this package may be used. The options below are used 
 package main
 
 import (
-    "os"
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
+	"os"
 	"github.com/kz/discordrus"
 )
 
@@ -37,11 +37,12 @@ func init() {
 		// Set minimum level to DebugLevel to receive all log entries
 		logrus.DebugLevel,
 		&discordrus.Opts{
-			Username: "Test Username",
-			Author: "", // Setting this to a non-empty string adds the author text to the message header
-			DisableTimestamp: false, // Setting this to true will disable timestamps from appearing in the footer
-			TimestampFormat: "Jan 2 15:04:05.00000", // The timestamp takes this format; if it is unset, it will take logrus' default format
-			EnableCustomColors: true, // If set to true, the below CustomLevelColors will apply
+			Username:           "Test Username",
+			Author:             "",                         // Setting this to a non-empty string adds the author text to the message header
+			DisableTimestamp:   false,                      // Setting this to true will disable timestamps from appearing in the footer
+			TimestampFormat:    "Jan 2 15:04:05.00000 MST", // The timestamp takes this format; if it is unset, it will take logrus' default format
+			TimestampLocale:    nil,                        // The timestamp uses this locale; if it is unset, it will use time.Local
+			EnableCustomColors: true,                       // If set to true, the below CustomLevelColors will apply
 			CustomLevelColors: &discordrus.LevelColors{
 				Debug: 10170623,
 				Info:  3581519,
@@ -68,7 +69,8 @@ Username | Replaces the default username of the webhook bot for the sent message
 Author | Adds an author field to the header if set | Author not set | Any non-empty string (1-256 chars inclusive)
 DisableInlineFields | Inline means whether Discord will display the field in a column (with maximum three columns to a row). Setting this to `true` will cause Discord to display the field in its own row. | false | bool 
 DisableTimestamp | Specifies whether the timestamp in the footer should be disabled | false | bool
-TimestampFormat | Change the timestamp format | logrus's default time format | `"Jan 2 15:04:05"`, or any format accepted by Golang
+TimestampFormat | Change the timestamp format | logrus's default time format | `"Jan 2 15:04:05.00000 MST"`, or any format accepted by Golang
+TimestampLocale | Change the timestamp locale | `nil` | nil == time.Local, time.UTC, time.LoadLocation("America/New_York"), etc
 EnableCustomColors | Specifies whether the `CustomLevelColors` opt value should be used instead of `discordrus.DefaultLevelColors`. If `true`, `CustomLevelColors` must be specified (or all colors will be set to the nil value of `0`, therefore displayed as white) | false | bool
 CustomLevelColors | Replaces `discordrus.DefaultLevelColors`. All fields must be entered or they will default to the nil value of `0`. | Pointer to struct instance of `discordrus.LevelColors`
 	
