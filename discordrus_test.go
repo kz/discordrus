@@ -14,13 +14,13 @@ import (
 func init() {
 	logrus.SetFormatter(&logrus.TextFormatter{})
 	logrus.SetOutput(os.Stderr)
-	logrus.SetLevel(logrus.DebugLevel)
+	logrus.SetLevel(logrus.TraceLevel)
 
 	logrus.AddHook(NewHook(
 		// Use environment variable for security reasons
 		os.Getenv("DISCORDRUS_WEBHOOK_URL"),
 		// Set minimum level to DebugLevel to receive all log entries
-		logrus.DebugLevel,
+		logrus.TraceLevel,
 		&Opts{
 			Username:           "Test Username",
 			Author:             "",                         // Setting this to a non-empty string adds the author text to the message header
@@ -29,6 +29,7 @@ func init() {
 			TimestampLocale:    nil,                        // The timestamp uses this locale; if it is unset, it will use time.Local
 			EnableCustomColors: true,                       // If set to true, the below CustomLevelColors will apply
 			CustomLevelColors: &LevelColors{
+				Trace: 3092790,
 				Debug: 10170623,
 				Info:  3581519,
 				Warn:  14327864,
@@ -93,7 +94,7 @@ func TestMaxLengths(t *testing.T) {
 		{
 			name:               "usernameMaxPlusOne",
 			json:               "{\"embeds\":[{\"author\":{\"name\":\"A\"},\"description\":\"A\",\"fields\":[{\"name\":\"A\",\"value\":\"A\"}],\"title\":\"A\"}],\"username\":\"" + strings.Repeat("A", maxUsernameChars+1) + "\"}",
-			expectedStatusCode: 400,
+			expectedStatusCode: 204,
 		},
 		{
 			name:               "fieldNameMax",
@@ -141,6 +142,7 @@ func TestMaxLengths(t *testing.T) {
 
 // TestHookIntegration is an integration test to ensure that log entries do send
 func TestHookIntegration(t *testing.T) {
+	logrus.WithFields(logrus.Fields{"String": "hi", "Integer": 2, "Boolean": false}).Trace("Check this out! Awesome, right?")
 	logrus.WithFields(logrus.Fields{"String": "hi", "Integer": 2, "Boolean": false}).Debug("Check this out! Awesome, right?")
 	logrus.WithFields(logrus.Fields{"String": "hi", "Integer": 2, "Boolean": false}).Info("Check this out! Awesome, right?")
 	logrus.WithFields(logrus.Fields{"String": "hi", "Integer": 2, "Boolean": false}).Warn("Check this out! Awesome, right?")
