@@ -17,6 +17,7 @@ func TestAllLevels(t *testing.T) {
 		logrus.WarnLevel,
 		logrus.InfoLevel,
 		logrus.DebugLevel,
+		logrus.TraceLevel,
 	}
 
 	if !reflect.DeepEqual(AllLevels, logrus.AllLevels) {
@@ -26,6 +27,15 @@ func TestAllLevels(t *testing.T) {
 
 // TestLevelThreshold ensures that the slice returned contains the correct level
 func TestLevelThreshold(t *testing.T) {
+	var expectedTraceThreshold = []logrus.Level{
+		logrus.PanicLevel,
+		logrus.FatalLevel,
+		logrus.ErrorLevel,
+		logrus.WarnLevel,
+		logrus.InfoLevel,
+		logrus.DebugLevel,
+		logrus.TraceLevel,
+	}
 	var expectedDebugThreshold = []logrus.Level{
 		logrus.PanicLevel,
 		logrus.FatalLevel,
@@ -44,6 +54,11 @@ func TestLevelThreshold(t *testing.T) {
 	}
 
 	// Test extreme boundaries
+	traceThreshold := LevelThreshold(logrus.TraceLevel)
+	if !reflect.DeepEqual(traceThreshold, expectedTraceThreshold) {
+		t.Error("Trace threshold does not match expected slice")
+	}
+
 	debugThreshold := LevelThreshold(logrus.DebugLevel)
 	if !reflect.DeepEqual(debugThreshold, expectedDebugThreshold) {
 		t.Error("Debug threshold does not match expected slice")
@@ -65,18 +80,23 @@ func TestLevelThreshold(t *testing.T) {
 func TestLevelColor(t *testing.T) {
 	// Set up custom LevelColors
 	customLevelColors := LevelColors{
-		Debug: 1,
-		Info:  2,
-		Warn:  3,
-		Error: 4,
-		Panic: 5,
-		Fatal: 6,
+		Trace: 1,
+		Debug: 2,
+		Info:  3,
+		Warn:  4,
+		Error: 5,
+		Panic: 6,
+		Fatal: 7,
 	}
 
 	defaultColors := []struct {
 		expected int
 		input    logrus.Level
 	}{
+		{
+			input:    logrus.TraceLevel,
+			expected: DefaultLevelColors.Trace,
+		},
 		{
 			input:    logrus.DebugLevel,
 			expected: DefaultLevelColors.Debug,
@@ -113,6 +133,10 @@ func TestLevelColor(t *testing.T) {
 		expected int
 		input    logrus.Level
 	}{
+		{
+			expected: customLevelColors.Trace,
+			input:    logrus.TraceLevel,
+		},
 		{
 			expected: customLevelColors.Debug,
 			input:    logrus.DebugLevel,
