@@ -79,7 +79,7 @@ func TestMaxLengths(t *testing.T) {
 		{
 			name:               "usernameEqualsOne",
 			json:               "{\"embeds\":[{\"author\":{\"name\":\"A\"},\"description\":\"A\",\"fields\":[{\"name\":\"A\",\"value\":\"A\"}],\"title\":\"A\"}],\"username\":\"A\"}",
-			expectedStatusCode: 400,
+			expectedStatusCode: 204,
 		},
 		{
 			name:               "usernameMin",
