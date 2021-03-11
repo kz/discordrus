@@ -4,7 +4,7 @@
 
 ## Install
 
-`go get -u github.com/kz/discordrus`
+`go get github.com/kz/discordrus`
 
 ## Setup
 
@@ -74,6 +74,10 @@ EnableCustomColors | Specifies whether the `CustomLevelColors` opt value should 
 CustomLevelColors | Replaces `discordrus.DefaultLevelColors`. All fields must be entered or they will default to the nil value of `0`. | Pointer to struct instance of `discordrus.LevelColors`
 	
 In addition to the above character count constraints, Discord has a maximum of 25 fields with their name and value limits being 256 and 1024 respectively. Furthermore, the description (i.e., logrus' error message) must be a maximum of 2048. All of these constraints, including the option constraints above, will automatically be truncated with no further action required.
+
+## Contributing
+
+Contributions are valued and welcome! Please feel free to open an issue or make a pull request.
  
 ## Acknowledgements
 The following repositories have been helpful in creating this package: [puddingfactory/logentrus](https://github.com/puddingfactory/logentrus) for Logentries, [johntdyer/slackrus](https://github.com/johntdyer/slackrus) for Slack and [nubo/hiprus](https://github.com/nubo/hiprus) for Hipchat. Check them out!
